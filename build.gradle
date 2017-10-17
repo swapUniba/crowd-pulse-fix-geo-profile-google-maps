@@ -15,9 +15,13 @@ repositories {
     }
 }
 
+configurations.all {
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
-    compile 'com.github.swapUniba:pulse:0.0.3'
-    compile 'com.github.swapUniba:crowd-pulse-data-java:0.0.1'
-    compile 'com.github.swapUniba:crowd-pulse-fix-geo-profile:0.0.1'
+    compile 'com.github.swapUniba:pulse:master-SNAPSHOT'
+    compile 'com.github.swapUniba:crowd-pulse-data-java:master-SNAPSHOT'
+    compile 'com.github.swapUniba:crowd-pulse-fix-geo-profile:master-SNAPSHOT'
     compile group: 'com.google.maps', name:'google-maps-services', version:'0.1.6'
 }
