@@ -49,6 +49,12 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
                 if (StringUtil.isNullOrEmpty(profile.getLocation())) {
                     return null;
                 }
+
+                // the profile already has the lat and lng data
+                if (profile.getLatitude() != null && profile.getLongitude() != null) {
+                    return new Double[]{profile.getLatitude(), profile.getLongitude()};
+                }
+
                 GeocodingResult[] results = null;
                 Double[] coordinates = null;
                 // attempt a forward geocoding (from address to lat-lng)
