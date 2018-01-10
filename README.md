@@ -16,3 +16,15 @@ Google Geocoding API key. To get your key, do the following:
 2. Go to "APIs & Auth".
 3. Go to the "Credentials" sub-section and create a new Server Key. That's your key.
 4. Go to the "APIs" sub-section and enable the "Geocoding API" from the Google Maps service.
+
+---------------------------------------
+
+Example of usage:
+```json
+"profile-fix-position": {
+      "plugin": "googlemaps",
+      "config": {
+        "setCoordinateToNull": "true"
+      }
+    },
+```

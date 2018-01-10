@@ -1,11 +1,15 @@
 package com.github.frapontillo.pulse.crowd.fixgeoprofile.googlemaps;
 
 import com.github.frapontillo.pulse.crowd.data.entity.Profile;
+import com.github.frapontillo.pulse.crowd.data.plugin.ConnectionFetcher;
 import com.github.frapontillo.pulse.crowd.fixgeoprofile.IProfileGeoFixerOperator;
 import com.github.frapontillo.pulse.spi.IPlugin;
+import com.github.frapontillo.pulse.spi.IPluginConfig;
+import com.github.frapontillo.pulse.spi.PluginConfigHelper;
 import com.github.frapontillo.pulse.spi.VoidConfig;
 import com.github.frapontillo.pulse.util.PulseLogger;
 import com.github.frapontillo.pulse.util.StringUtil;
+import com.google.gson.JsonElement;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
@@ -24,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Francesco Pontillo
  */
-public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidConfig> {
+public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, GoogleMapsProfileGeoFixer.GoogleMapsProfileGeoFixerConfig> {
     public final static String PLUGIN_NAME = "googlemaps";
     private final static String PROP_GEOCODING_APIKEY = "geocoding.apiKey";
     private final GeoApiContext context;
@@ -39,11 +43,11 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
         return PLUGIN_NAME;
     }
 
-    @Override public VoidConfig getNewParameter() {
-        return new VoidConfig();
+    @Override public GoogleMapsProfileGeoFixerConfig getNewParameter() {
+        return new GoogleMapsProfileGeoFixerConfig();
     }
 
-    @Override protected Observable.Operator<Profile, Profile> getOperator(VoidConfig parameters) {
+    @Override protected Observable.Operator<Profile, Profile> getOperator(GoogleMapsProfileGeoFixerConfig parameters) {
         return new IProfileGeoFixerOperator(this) {
             @Override public Double[] getCoordinates(Profile profile) {
                 if (StringUtil.isNullOrEmpty(profile.getLocation())) {
@@ -68,6 +72,9 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
                 if (results != null && results.length > 0) {
                     coordinates = new Double[]{results[0].geometry.location.lat,
                             results[0].geometry.location.lng};
+
+                } else if (parameters != null && parameters.isSetCoordinateNull()) {
+                    coordinates = new Double[]{-1.0, -1.0};
                 }
                 return coordinates;
             }
@@ -93,4 +100,28 @@ public class GoogleMapsProfileGeoFixer extends IPlugin<Profile, Profile, VoidCon
             return "";
         }
     }
+
+    public class GoogleMapsProfileGeoFixerConfig implements IPluginConfig<GoogleMapsProfileGeoFixer.GoogleMapsProfileGeoFixerConfig> {
+
+        /**
+         * If true, the plug-in sets to -1 coordinates that the Google Maps service does not find the coordinates for
+         * a specified text-location.
+         */
+        private boolean setCoordinateToNull;
+
+        public boolean isSetCoordinateNull() {
+            return setCoordinateToNull;
+        }
+
+        public void setSetCoordinateNull(boolean setCoordinateNull) {
+            this.setCoordinateToNull = setCoordinateNull;
+        }
+
+        @Override
+        public GoogleMapsProfileGeoFixer.GoogleMapsProfileGeoFixerConfig buildFromJsonElement(JsonElement json) {
+            return PluginConfigHelper.buildFromJson(json, GoogleMapsProfileGeoFixer.GoogleMapsProfileGeoFixerConfig.class);
+        }
+
+    }
+
 }
