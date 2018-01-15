@@ -8,8 +8,8 @@ Google Maps based Crowd Pulse profile geo-location fixer.
 To fix geolocation for profiles you need to create a `geocoding.properties` file and
 put it into the resources directory (must be accessible by the class loader).
 
-This file must contain the `geocoding.apiKey` property, whose value must be a 
-Google Geocoding API key. To get your key, do the following:
+This file must contain the `geocoding.apiKey` property, whose value (or values, comma separated) must be a 
+Google Geocoding API key(s). To get your key, do the following:
 
 1. If you don't have on already, create a new project on the [Google Developers Console]
 (https://console.developers.google.com).
